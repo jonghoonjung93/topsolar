@@ -81,8 +81,9 @@ def fetch_today():
 
     #time.sleep(100)
 
-#result=fetch_today()
-#print(result)
+if __name__ == "__main__":
+    result=fetch_today()
+    print(result)
 
 
 """
