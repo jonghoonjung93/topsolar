@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>와이솔라</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>금일발전(kWh)</th>
+                    <th>발전시간</th>
+                    <th>금월발전량</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>{{result.today_kWh}}</th>
+                    <th>{{result.today_hour}}</th>
+                    <th>{{result.month_kWh}}</th>
+                </tr>
+            </tbody>
+        </table>  
+    </main>
+</body>
+</html>
