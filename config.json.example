@@ -1,0 +1,17 @@
+{
+    "DEFAULT": {
+        "URL" : "http://...",
+        "ID": "...",
+        "PASSWORD": "..."
+    },
+    "ONLINE": {
+        "URL" : "http://...",
+        "ID": "...",
+        "PASSWORD": "..."
+    },
+    "TEST": {
+        "URL" : "http://...",
+        "ID": "...",
+        "PASSWORD": "..."
+    }
+}
