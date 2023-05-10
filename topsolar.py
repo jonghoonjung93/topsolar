@@ -21,12 +21,16 @@ def fetch_today():
     user_id = config['DEFAULT']['ID']
     password = config['DEFAULT']['PASSWORD']
     # ------------------------------------
+    #print(user_id)
+    #print(password)
+    #print(url)
 
     driver = webdriver.Chrome(options=options)
     driver.get(url)
     #driver.maximize_window()
     action = ActionChains(driver)
 
+    time.sleep(2)
     #driver.find_element('id', 'user-id').click()
     #action.send_keys('ys3_8862').perform()
     driver.find_element(By.ID, "user-id").send_keys(user_id)
