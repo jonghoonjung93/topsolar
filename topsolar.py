@@ -30,7 +30,7 @@ def fetch_today():
     #driver.maximize_window()
     action = ActionChains(driver)
 
-    time.sleep(2)
+    time.sleep(3)
     #driver.find_element('id', 'user-id').click()
     #action.send_keys('ys3_8862').perform()
     driver.find_element(By.ID, "user-id").send_keys(user_id)
