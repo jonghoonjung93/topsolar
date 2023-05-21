@@ -2,3 +2,4 @@ nohup.out
 config.json
 *.pyc
 __pycache__
+README.txt
