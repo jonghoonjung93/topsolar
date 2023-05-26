@@ -7,8 +7,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 #from webdriver_manager.chrome import ChromeDriverManager
 from requests import Session
-import time
+import time, datetime
 import json
+import telegram
+import asyncio
 
 def fetch_today():
     options = Options()
@@ -20,6 +22,8 @@ def fetch_today():
     url = config['DEFAULT']['URL']
     user_id = config['DEFAULT']['ID']
     password = config['DEFAULT']['PASSWORD']
+    token = config['DEFAULT']['TOKEN']
+    chat_id = config['DEFAULT']['CHAT-ID']
     # ------------------------------------
     #print(user_id)
     #print(password)
@@ -81,6 +85,17 @@ def fetch_today():
     }
 
     driver.quit()
+
+    current_time = datetime.datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    async def tele_push(content): #텔레그램 발송용 함수
+      bot = telegram.Bot(token = token)
+      await bot.send_message(chat_id, formatted_time + "\n" + content)
+    
+    msg_content = str(result)
+    asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
+
     return result
 
     #time.sleep(100)
@@ -88,6 +103,8 @@ def fetch_today():
 if __name__ == "__main__":
     result=fetch_today()
     print(result)
+    # test_msg()
+    # os.system("python3 ./telegram/telegram_push.py")
 
 
 """

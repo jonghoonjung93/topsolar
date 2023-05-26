@@ -2,16 +2,22 @@
     "DEFAULT": {
         "URL" : "http://...",
         "ID": "...",
-        "PASSWORD": "..."
+        "PASSWORD": "...",
+	"TOKEN": "...",
+	"CHAT-ID": "..."
     },
     "ONLINE": {
         "URL" : "http://...",
         "ID": "...",
-        "PASSWORD": "..."
+        "PASSWORD": "...",
+	"TOKEN": "...",
+	"CHAT-ID": "..."
     },
     "TEST": {
         "URL" : "http://...",
         "ID": "...",
-        "PASSWORD": "..."
+        "PASSWORD": "...",
+	"TOKEN": "...",
+	"CHAT-ID": "..."
     }
 }
