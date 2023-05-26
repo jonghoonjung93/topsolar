@@ -4,3 +4,5 @@ config.json
 __pycache__
 README.txt
 result.log
+result.err
+run.sh
