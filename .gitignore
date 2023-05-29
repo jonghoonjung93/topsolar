@@ -2,7 +2,7 @@ nohup.out
 config.json
 *.pyc
 __pycache__
-README.txt
+*.txt
 result.log
 result.err
 telegram

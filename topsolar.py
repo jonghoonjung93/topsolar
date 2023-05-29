@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 #from webdriver_manager.chrome import ChromeDriverManager
 from requests import Session
+from selenium.webdriver.support.select import Select
 import time, datetime
 import json
 import telegram
@@ -64,7 +65,8 @@ def fetch_today():
 
     #print(driver.current_url) #로그인후 url 확인
 
-    soup = BeautifulSoup(driver.page_source, "html.parser")
+    # soup = BeautifulSoup(driver.page_source, "html.parser")
+
     #data = driver.find_element('id', 'app').text
     #day_data = soup.find('td').text
     
@@ -91,11 +93,126 @@ def fetch_today():
 
     return result
 
-    #time.sleep(100)
+def fetch_today2():
+    options = Options()
+    options.add_argument("headless") #크롬창이 뜨지 않고 백그라운드로 동작됨
+    
+    # config.json 파일처리 ----------------
+    with open('config.json','r') as f:
+        config = json.load(f)
+    url = config['DEFAULT']['URL']
+    user_id = config['DEFAULT']['ID']
+    password = config['DEFAULT']['PASSWORD']
+    token = config['DEFAULT']['TOKEN']
+    chat_id = config['DEFAULT']['CHAT-ID']
+    # ------------------------------------
+    #print(user_id)
+    #print(password)
+    #print(url)
+
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+    #driver.maximize_window()
+    action = ActionChains(driver)
+
+    time.sleep(3)
+    driver.find_element(By.ID, "user-id").send_keys(user_id)
+    driver.find_element(By.ID, "user-password").send_keys(password)
+    driver.find_element(By.ID, 'login-btn').click()
+    """
+    driver.find_element(By.CSS_SELETOR, "#id이름")
+    driver.find_element(By.CSS_SELETOR, ".class이름")
+    driver.find_element(By.CSS_SELETOR, "[title='title내용']")
+    driver.find_element(By.LINK_TEXT, "어쩌구").click()
+    driver.find_element(By.PARTIAL_LINK_TEXT, "쩌구").click()
+    driver.find_elements(By.TAG_NAME, "span")
+    < XPath 사용법 >
+        크롬에서 검사한 html코드에서 마우스오른쪽 복사->XPath복사하면 아래값이 나옴
+        //*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td')
+    """
+    time.sleep(1) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
+    """
+    * 2번째 대기방법
+        driver.implicitly_wait(10)
+          ==> 10초까지 기다림. 대신 10초안에 웹화면이 표시되면 바로 진행되지만 안되는 경우 있음
+    * 3번째 대기방법 (예를들면, 특정 버튼이 뜰때까지 기다리기)
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        button = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#search_btn')))
+        button.click()
+    """
+
+    #print(driver.current_url) #로그인후 url 확인
+
+    # soup = BeautifulSoup(driver.page_source, "html.parser")
+
+    #data = driver.find_element('id', 'app').text
+    #day_data = soup.find('td').text
+
+    # 와이솔라1호 (초기화면)
+    today_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+    today_hour1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+    month_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+
+    # 와이솔라2호 선택
+    select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+    select.select_by_value('Table_95')
+
+    time.sleep(2)
+    today_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+    today_hour2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+    month_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+    # print(today_kWh2)
+
+    # 와이솔라3호 선택
+    select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+    select.select_by_value('Table_117')
+
+    time.sleep(2)
+    today_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+    today_hour3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+    month_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+    # print(today_kWh3)
+
+    # 와이솔라4호 선택
+    select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+    select.select_by_value('Table_118')
+
+    time.sleep(2)
+    today_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+    today_hour4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+    month_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+    # print(today_kWh4)
+
+    result = {
+        'today_kWh' : [today_kWh1, today_kWh2, today_kWh3, today_kWh4],
+        'today_hour' : [today_hour1, today_hour2, today_hour3, today_hour4],
+        'month_kWh' : [month_kWh1, month_kWh2, month_kWh3, month_kWh4],
+    }
+
+    driver.quit()
+
+    # print(result['today_kWh'], result['month_kWh'])
+
+    current_time = datetime.datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    async def tele_push(content): #텔레그램 발송용 함수
+      bot = telegram.Bot(token = token)
+      await bot.send_message(chat_id, formatted_time + "\n" + content)
+    
+    # msg_content = str(result)
+    msg_content = str(result['today_kWh']) + str(result['month_kWh'])
+    asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
+
+    return result
 
 if __name__ == "__main__":
-    result=fetch_today()
+    # result=fetch_today()
+    result=fetch_today2()
     print(result)
+    # print(result['today_kWh'])
     # test_msg()
     # os.system("python3 ./telegram/telegram_push.py")
 
