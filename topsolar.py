@@ -35,15 +35,8 @@ def fetch_today():
     action = ActionChains(driver)
 
     time.sleep(3)
-    #driver.find_element('id', 'user-id').click()
-    #action.send_keys('ys3_8862').perform()
     driver.find_element(By.ID, "user-id").send_keys(user_id)
-
-    #driver.find_element('id', 'user-password').click()
-    #action.send_keys('1234').perform()
     driver.find_element(By.ID, "user-password").send_keys(password)
-
-    #driver.find_element('id', 'login-btn').click()
     driver.find_element(By.ID, 'login-btn').click()
     """
     driver.find_element(By.CSS_SELETOR, "#id이름")
