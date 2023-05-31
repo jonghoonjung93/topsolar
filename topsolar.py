@@ -12,6 +12,7 @@ import time, datetime
 import json
 import telegram
 import asyncio
+import sqlite3
 
 def fetch_today():
     options = Options()
@@ -223,8 +224,32 @@ def fetch_today2():
 
     current_time = datetime.datetime.now()
     formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_date = current_time.strftime("%Y%m%d")
+    formatted_month = current_time.strftime("%Y%m")
 
     # DB insert 처리
+    try:
+      conn = sqlite3.connect('topsolar.sqlite3')
+      cursor = conn.cursor()
+
+      data_list1 = [
+        (formatted_date, 'ysolar1', today_kWh1, today_hour1),
+        (formatted_date, 'ysolar2', today_kWh2, today_hour2),
+        (formatted_date, 'ysolar3', today_kWh3, today_hour3),
+        (formatted_date, 'ysolar4', today_kWh4, today_hour4)
+      ]
+      data_list2 = [
+        (formatted_month, 'ysolar1', month_kWh1),
+        (formatted_month, 'ysolar2', month_kWh2),
+        (formatted_month, 'ysolar3', month_kWh3),
+        (formatted_month, 'ysolar4', month_kWh4)
+      ]
+      cursor.executemany("INSERT OR REPLACE INTO power_gen_day (date, st_name, gen_kWh, gen_hour) VALUES (?,?,?,?);", data_list1)
+      cursor.executemany("INSERT OR REPLACE INTO power_gen_month (month, st_name, gen_kWh) VALUES (?,?,?);", data_list2)
+
+      conn.commit()
+    finally:
+      conn.close()
 
 
     # telegram 메세지 발송
