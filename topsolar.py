@@ -111,14 +111,11 @@ def fetch_today2():
     #print(url)
 
     driver = webdriver.Chrome(options=options)
-    driver.get(url)
+    # driver.get(url)
     #driver.maximize_window()
-    action = ActionChains(driver)
+    # action = ActionChains(driver)
 
-    time.sleep(3)
-    driver.find_element(By.ID, "user-id").send_keys(user_id)
-    driver.find_element(By.ID, "user-password").send_keys(password)
-    driver.find_element(By.ID, 'login-btn').click()
+
     """
     driver.find_element(By.CSS_SELETOR, "#id이름")
     driver.find_element(By.CSS_SELETOR, ".class이름")
@@ -131,7 +128,7 @@ def fetch_today2():
         //*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td
         driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td')
     """
-    time.sleep(1) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
+    # time.sleep(2) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
     """
     * 2번째 대기방법
         driver.implicitly_wait(10)
@@ -149,41 +146,70 @@ def fetch_today2():
 
     #data = driver.find_element('id', 'app').text
     #day_data = soup.find('td').text
+    
+    count = 0
+    while count < 5:
+      driver.get(url)
+      time.sleep(3)
+      driver.find_element(By.ID, "user-id").send_keys(user_id)
+      driver.find_element(By.ID, "user-password").send_keys(password)
+      driver.find_element(By.ID, 'login-btn').click()
 
-    # 와이솔라1호 (초기화면)
-    today_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
-    today_hour1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
-    month_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+      time.sleep(2) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
+
+      # 와이솔라1호 (초기화면)
+      today_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+      today_hour1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+      month_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+      # print("today_kWh1 (" + str(count) + "): " + today_kWh1)
+      count += 1
+      if today_kWh1 != '':  # today_kW1 데이타가 null 이면 while 문을 다시 시도 (최대 5번만)
+        break
 
     # 와이솔라2호 선택
-    select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
-    select.select_by_value('Table_95')
+    count = 0
+    while count < 5:
+      select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+      select.select_by_value('Table_95')
 
-    time.sleep(2)
-    today_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
-    today_hour2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
-    month_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
-    # print(today_kWh2)
+      time.sleep(2)
+      today_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+      today_hour2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+      month_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+      # print("today_kWh2 (" + str(count) + "): " + today_kWh2)
+      count += 1
+      if today_kWh2 != '':
+        break
 
     # 와이솔라3호 선택
-    select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
-    select.select_by_value('Table_117')
+    count = 0
+    while count < 5:
+      select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+      select.select_by_value('Table_117')
 
-    time.sleep(2)
-    today_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
-    today_hour3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
-    month_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
-    # print(today_kWh3)
+      time.sleep(2)
+      today_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+      today_hour3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+      month_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+      # print("today_kWh3 (" + str(count) + "): " + today_kWh3)
+      count += 1
+      if today_kWh3 != '':
+        break
 
     # 와이솔라4호 선택
-    select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
-    select.select_by_value('Table_118')
+    count = 0
+    while count < 5:
+      select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+      select.select_by_value('Table_118')
 
-    time.sleep(2)
-    today_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
-    today_hour4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
-    month_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
-    # print(today_kWh4)
+      time.sleep(2)
+      today_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+      today_hour4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+      month_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+      # print("today_kWh4 (" + str(count) + "): " + today_kWh4)
+      count += 1
+      if today_kWh4 != '':
+        break
 
     result = {
         'today_kWh' : [today_kWh1, today_kWh2, today_kWh3, today_kWh4],
@@ -198,6 +224,10 @@ def fetch_today2():
     current_time = datetime.datetime.now()
     formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
+    # DB insert 처리
+
+
+    # telegram 메세지 발송
     async def tele_push(content): #텔레그램 발송용 함수
       bot = telegram.Bot(token = token)
       await bot.send_message(chat_id, formatted_time + "\n" + content)
