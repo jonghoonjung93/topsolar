@@ -255,10 +255,10 @@ def fetch_today2():
     # telegram 메세지 발송
     async def tele_push(content): #텔레그램 발송용 함수
       bot = telegram.Bot(token = token)
-      await bot.send_message(chat_id, formatted_time + "\n" + content)
+      await bot.send_message(chat_id, formatted_time + "\n" + content, parse_mode = 'Markdown')
     
     # msg_content = str(result)
-    msg_content = str(result['today_kWh']) + str(result['month_kWh'])
+    msg_content = "*당일 " + str(result['today_kWh']) + "*\n당월 [" + str(result['month_kWh']) + "]"
     asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
     return result
