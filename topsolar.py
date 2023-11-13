@@ -149,7 +149,7 @@ def fetch_today2():
     #day_data = soup.find('td').text
     
     count = 0
-    while count < 10:
+    while count < 20:
       driver.get(url)
       time.sleep(3)
       driver.find_element(By.ID, "user-id").send_keys(user_id)
@@ -169,7 +169,7 @@ def fetch_today2():
 
     # 와이솔라2호 선택
     count = 0
-    while count < 10:
+    while count < 20:
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_95')
 
@@ -184,7 +184,7 @@ def fetch_today2():
 
     # 와이솔라3호 선택
     count = 0
-    while count < 10:
+    while count < 20:
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_117')
 
@@ -199,7 +199,7 @@ def fetch_today2():
 
     # 와이솔라4호 선택
     count = 0
-    while count < 10:
+    while count < 20:
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_118')
 
