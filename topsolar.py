@@ -151,12 +151,12 @@ def fetch_today2():
     count = 0
     while count < 20:
       driver.get(url)
-      time.sleep(3)
+      time.sleep(5)
       driver.find_element(By.ID, "user-id").send_keys(user_id)
       driver.find_element(By.ID, "user-password").send_keys(password)
       driver.find_element(By.ID, 'login-btn').click()
 
-      time.sleep(3) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
+      time.sleep(5) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
 
       # 와이솔라1호 (초기화면)
       today_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
@@ -173,7 +173,7 @@ def fetch_today2():
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_95')
 
-      time.sleep(3)
+      time.sleep(5)
       today_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
       today_hour2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
       month_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
@@ -188,7 +188,7 @@ def fetch_today2():
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_117')
 
-      time.sleep(3)
+      time.sleep(5)
       today_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
       today_hour3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
       month_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
@@ -203,7 +203,7 @@ def fetch_today2():
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_118')
 
-      time.sleep(3)
+      time.sleep(5)
       today_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
       today_hour4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
       month_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
