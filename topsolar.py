@@ -112,51 +112,16 @@ def fetch_today2():
     #print(url)
 
     driver = webdriver.Chrome(options=options)
-    # driver.get(url)
-    #driver.maximize_window()
-    # action = ActionChains(driver)
 
-
-    """
-    driver.find_element(By.CSS_SELETOR, "#id이름")
-    driver.find_element(By.CSS_SELETOR, ".class이름")
-    driver.find_element(By.CSS_SELETOR, "[title='title내용']")
-    driver.find_element(By.LINK_TEXT, "어쩌구").click()
-    driver.find_element(By.PARTIAL_LINK_TEXT, "쩌구").click()
-    driver.find_elements(By.TAG_NAME, "span")
-    < XPath 사용법 >
-        크롬에서 검사한 html코드에서 마우스오른쪽 복사->XPath복사하면 아래값이 나옴
-        //*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td
-        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td')
-    """
-    # time.sleep(2) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
-    """
-    * 2번째 대기방법
-        driver.implicitly_wait(10)
-          ==> 10초까지 기다림. 대신 10초안에 웹화면이 표시되면 바로 진행되지만 안되는 경우 있음
-    * 3번째 대기방법 (예를들면, 특정 버튼이 뜰때까지 기다리기)
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
-        button = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#search_btn')))
-        button.click()
-    """
-
-    #print(driver.current_url) #로그인후 url 확인
-
-    # soup = BeautifulSoup(driver.page_source, "html.parser")
-
-    #data = driver.find_element('id', 'app').text
-    #day_data = soup.find('td').text
-    
     count = 0
-    while count < 20:
+    while count < 5:
       driver.get(url)
-      time.sleep(5)
+      time.sleep(10)
       driver.find_element(By.ID, "user-id").send_keys(user_id)
       driver.find_element(By.ID, "user-password").send_keys(password)
       driver.find_element(By.ID, 'login-btn').click()
 
-      time.sleep(5) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
+      time.sleep(50) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
 
       # 와이솔라1호 (초기화면)
       today_kWh1 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
@@ -169,11 +134,11 @@ def fetch_today2():
 
     # 와이솔라2호 선택
     count = 0
-    while count < 20:
+    while count < 5:
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_95')
 
-      time.sleep(5)
+      time.sleep(50)
       today_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
       today_hour2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
       month_kWh2 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
@@ -184,11 +149,11 @@ def fetch_today2():
 
     # 와이솔라3호 선택
     count = 0
-    while count < 20:
+    while count < 5:
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_117')
 
-      time.sleep(5)
+      time.sleep(50)
       today_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
       today_hour3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
       month_kWh3 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
@@ -199,11 +164,11 @@ def fetch_today2():
 
     # 와이솔라4호 선택
     count = 0
-    while count < 20:
+    while count < 5:
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value('Table_118')
 
-      time.sleep(5)
+      time.sleep(50)
       today_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
       today_hour4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
       month_kWh4 = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
