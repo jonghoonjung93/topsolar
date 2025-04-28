@@ -64,7 +64,7 @@ def fetch_today():
     month_kWh = ['','','','']
 
     WAIT_TIME = 10
-    WAIT_CNT = 20
+    WAIT_CNT = 50
 
     i = 0
     for table in solars:
