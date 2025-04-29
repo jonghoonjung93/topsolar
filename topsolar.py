@@ -68,12 +68,12 @@ def fetch_today():
 
     i = 0
     for table in solars:
-      print(f"solars[{i}]: {table}")
+      # print(f"solars[{i}]: {table}")
 
       # 와이솔라1호 선택
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value(table)
-      print("wait... 10sec")
+      # print("wait... 10sec")
       count = 0
       while count < WAIT_CNT:
         time.sleep(WAIT_TIME) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
@@ -81,13 +81,13 @@ def fetch_today():
         today_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
         today_hour[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
         month_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
-        print(f"today_kWh[{i}] (count={str(count)}): {today_kWh[i]}")
+        print(f"today_kWh[{i}] (count={str(count)})")
         count += 1
         if today_kWh[i] == '':  # today_kW1 데이타가 null 이면 while 문을 다시 시도
-          print(f"wait... 10sec {count}")
+          # print(f"wait... 10sec {count}")
           continue
         else: # 결과값 찾기에 성공했을때는 break 로 while 문 탈출
-          print(f"success.. {today_kWh[i]}")
+          # print(f"success.. {today_kWh[i]}")
           i = i + 1
           break
     
@@ -96,7 +96,7 @@ def fetch_today():
         'today_hour': today_hour,
         'month_kWh': month_kWh
     }
-
+    
     driver.quit()
 
     # print(result['today_kWh'], result['month_kWh'])
