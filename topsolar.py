@@ -87,7 +87,7 @@ def fetch_today():
           # print(f"wait... 10sec {count}")
           continue
         else: # 결과값 찾기에 성공했을때는 break 로 while 문 탈출
-          print(f"와이솔라{i+1}호 : {today_kWh[i]} 재시도 {count}회\n")
+          print(f"와이솔라{i+1}호 : {today_kWh[i]} 재시도 {count}회")
           i = i + 1
           break
     
