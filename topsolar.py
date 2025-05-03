@@ -18,10 +18,10 @@ import socket
 def mode_check():
   hostname = socket.gethostname()
   # print("hostname = " + hostname)
-  if 'local' in hostname.lower(): #jungui-MacBookAir.local, Mac-mini.local
+  if 'local' in hostname.lower(): # jungui-MacBookAir.local, Mac-mini.local
     MODE = "TEST"
   else:
-    MODE = "ONLINE"
+    MODE = "ONLINE" # ubuntu-online
   return(MODE)
 
 def fetch_today():
@@ -70,13 +70,13 @@ def fetch_today():
     for table in solars:
       # print(f"solars[{i}]: {table}")
 
-      # 와이솔라1호 선택
+      # 와이솔라1호~4호 선택
       select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
       select.select_by_value(table)
       # print("wait... 10sec")
       count = 0
       while count < WAIT_CNT:
-        time.sleep(WAIT_TIME) #대기시간이 없으면 로그인하기 전 페이지에서 작업이 됨
+        time.sleep(WAIT_TIME) #몇 kWh 가 생산되었는지 표시되기까지 기다리는 시간
       
         today_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
         today_hour[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
