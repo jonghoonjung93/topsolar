@@ -63,8 +63,8 @@ def fetch_today():
     today_hour = ['','','','']
     month_kWh = ['','','','']
 
-    WAIT_TIME = 10
-    WAIT_CNT = 50
+    WAIT_TIME = 5
+    WAIT_CNT = 100
 
     i = 0
     for table in solars:
@@ -81,13 +81,13 @@ def fetch_today():
         today_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
         today_hour[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
         month_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
-        print(f"today_kWh[{i}] (count={str(count)})")
+        # print(f"today_kWh[{i}] (count={str(count)})")
         count += 1
         if today_kWh[i] == '':  # today_kW1 데이타가 null 이면 while 문을 다시 시도
           # print(f"wait... 10sec {count}")
           continue
         else: # 결과값 찾기에 성공했을때는 break 로 while 문 탈출
-          # print(f"success.. {today_kWh[i]}")
+          print(f"와이솔라{i+1}호 : {today_kWh[i]} 재시도 {count}회\n")
           i = i + 1
           break
     
