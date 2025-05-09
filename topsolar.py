@@ -145,3 +145,13 @@ def fetch_today():
 if __name__ == "__main__":
     result=fetch_today()
     print(result)
+    # Temporarily set the 4th value of today_kWh to empty string for testing
+    # result['today_kWh'][3] = ''
+    # print(result)
+    
+    # Check if any value in today_kWh is empty
+    if '' in result['today_kWh']:
+        print("ERROR: One or more today_kWh values are missing")
+        # 재시도
+        result=fetch_today()
+        print(result)
