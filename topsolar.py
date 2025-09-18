@@ -200,13 +200,28 @@ def fetch_today_kp():
     except:
       printL("popclose not found")
 
-    driver.find_element(By.ID, "RSA_USER_ID").send_keys(user_id[i])
-    driver.find_element(By.ID, "RSA_USER_PWD").send_keys(password)
-    
-    # 아래 3가지 로그인버튼 클릭 방법중 한개만 온라인에서 성공함 (개발에서는 다 성공)
-    driver.find_element(By.ID, "RSA_USER_PWD").send_keys(Keys.ENTER)
-    # driver.find_element(By.CLASS_NAME, 'intro_btn').click()
-    # driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[1]/form/fieldset/input[1]").click()
+    try:
+      driver.find_element(By.ID, "RSA_USER_ID").send_keys(user_id[i])
+      driver.find_element(By.ID, "RSA_USER_PWD").send_keys(password)
+      # 아래 3가지 로그인버튼 클릭 방법중 한개만 온라인에서 성공함 (개발에서는 다 성공)
+      driver.find_element(By.ID, "RSA_USER_PWD").send_keys(Keys.ENTER)
+      # driver.find_element(By.CLASS_NAME, 'intro_btn').click()
+      # driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[1]/form/fieldset/input[1]").click()
+    except:
+      printL("로그인 실패. 재시도(1회만)")
+      try:
+        driver.get(url1)
+        time.sleep(10)
+        driver.find_element(By.ID, "RSA_USER_ID").send_keys(user_id[i])
+        driver.find_element(By.ID, "RSA_USER_PWD").send_keys(password)
+        driver.find_element(By.ID, "RSA_USER_PWD").send_keys(Keys.ENTER)
+      except:
+        printL("로그인 실패. 2회 실패. return")
+        result = {
+            'today_kWh': today_kWh,
+            'month_kWh': month_kWh
+        }
+        return result
     
     time.sleep(2)
     driver.get(url2)  # 시간대별 사용량 조회 페이지 이동 (당일자 조회용)
@@ -236,8 +251,6 @@ def fetch_today_kp():
     time.sleep(1)
     # 당월 총발전량 가져오기 (소수점 아래는 버림)
     month_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr/td[4]").text.split('.')[0]
-    # Remove decimal points from month_kWh value
-    # month_kWh[i] = month_kWh[i].split('.')[0]
     printL(f"[한전] 와이솔라{i+1}호 month: {month_kWh[i]}")
     time.sleep(2)
 
