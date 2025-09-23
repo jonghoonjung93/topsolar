@@ -223,12 +223,25 @@ def fetch_today_kp():
         }
         return result
     
-    time.sleep(2)
+    time.sleep(1)
     driver.get(url2)  # 시간대별 사용량 조회 페이지 이동 (당일자 조회용)
+    time.sleep(3)
     # 발전 라디오 버튼 클릭
-    driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
+    try:
+      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
+    except:
+      printL("발전 라디오 버튼 클릭 실패")
+      time.sleep(3)
+      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
+    time.sleep(1)
     # 조회 버튼 클릭
-    driver.find_element(By.CLASS_NAME, "btn_blue_right").click()
+    # driver.find_element(By.CLASS_NAME, "btn_blue_right").click()  #이거는 실패, XPATH로 변경
+    try:
+      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
+    except:
+      printL("조회 버튼 클릭 실패")
+      time.sleep(1)
+      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
     time.sleep(1)
     # 당일 발전량 가져오기
     today_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr[1]/td[6]").text
@@ -247,7 +260,14 @@ def fetch_today_kp():
       time.sleep(3)
       driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
     # 조회 버튼 클릭
-    driver.find_element(By.CLASS_NAME, "btn_blue_right").click()
+    time.sleep(1)
+    # driver.find_element(By.CLASS_NAME, "btn_blue_right").click()
+    try:
+      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
+    except:
+      printL("조회 버튼 클릭 실패")
+      time.sleep(1)
+      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
     time.sleep(1)
     # 당월 총발전량 가져오기 (소수점 아래는 버림)
     month_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr/td[4]").text.split('.')[0]
