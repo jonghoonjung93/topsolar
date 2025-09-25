@@ -225,12 +225,12 @@ def fetch_today_kp():
     
     time.sleep(1)
     driver.get(url2)  # 시간대별 사용량 조회 페이지 이동 (당일자 조회용)
-    time.sleep(3)
+    time.sleep(5)
     # 발전 라디오 버튼 클릭
     try:
       driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
     except:
-      printL("발전 라디오 버튼 클릭 실패")
+      printL("발전 라디오 버튼 클릭 실패1")
       time.sleep(3)
       driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
     time.sleep(1)
@@ -251,12 +251,12 @@ def fetch_today_kp():
     time.sleep(1)
 
     driver.get(url3)  # 일별 사용량 조회 페이지 이동 (월간 합계 조회용)
-    time.sleep(3)
+    time.sleep(5)
     # 발전 라디오 버튼 클릭
     try:
       driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
     except:
-      printL("발전 라디오 버튼 클릭 실패")
+      printL("발전 라디오 버튼 클릭 실패2")
       time.sleep(3)
       driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
     # 조회 버튼 클릭
