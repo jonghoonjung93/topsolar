@@ -334,9 +334,23 @@ def fetch_today_kp():
   return result
 
 if __name__ == "__main__":
+  # 한전파워플래너 로직 실행
+  flag = True
+  if flag:
+    printL("[한전] 실행")
+    result2=fetch_today_kp()
+    printL(result2)
+    # Check if any value in today_kWh is empty
+    if '' in result2['today_kWh']:
+        printL("[KP] ERROR: One or more today_kWh values are missing")
+        # 재시도
+        result2=fetch_today_kp()
+        printL(result2)
+
   # 탑솔라 로직 실행
   flag = True
   if flag:
+    printL("[TOPSOLAR] 실행")
     result=fetch_today()
     printL(result)
     # Check if any value in today_kWh is empty
@@ -346,14 +360,3 @@ if __name__ == "__main__":
         result=fetch_today()
         printL(result)
 
-  # 한전파워플래너 로직 실행
-  flag = True
-  if flag:
-    result2=fetch_today_kp()
-    printL(result2)
-    # Check if any value in today_kWh is empty
-    if '' in result2['today_kWh']:
-        printL("[KP] ERROR: One or more today_kWh values are missing")
-        # 재시도
-        result2=fetch_today_kp()
-        printL(result2)
