@@ -348,7 +348,7 @@ if __name__ == "__main__":
         printL(result2)
 
   # 탑솔라 로직 실행
-  flag = True
+  flag = False
   if flag:
     printL("[TOPSOLAR] 실행")
     result=fetch_today()
