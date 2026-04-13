@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-#from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
 from requests import Session
 from selenium.webdriver.support.select import Select
 import time, datetime
@@ -61,7 +61,8 @@ def fetch_today():
     #print(password)
     #print(url)
 
-    driver = webdriver.Chrome(options=options)
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
 
     # 사이트 접속 및 로그인
     driver.get(url)
@@ -181,7 +182,8 @@ def fetch_today_kp():
   # print(password)
   # print(url1)
   
-  driver = webdriver.Chrome(options=options)
+  service = Service(ChromeDriverManager().install())
+  driver = webdriver.Chrome(service=service, options=options)
   # Set browser window size to maximum
   # driver.maximize_window()
 
@@ -321,6 +323,26 @@ def fetch_today_kp():
     finally:
       conn.close()
 
+  # smp 수익 계산 로직
+  flag = True
+  if flag:
+    total_kWh = sum(float(x) for x in today_kWh if x)
+
+    # smp 당일 단가 조회
+    try:
+        with open('../attendance/today_smp.txt', 'r', encoding='utf-8') as f:
+            today_smp = f.read().strip()
+        # txt 파일에 기록된 값이 숫자인지 확인
+        today_smp = float(today_smp)
+        printL(f"[한전] 당일 smp 단가: {today_smp}")
+    except (FileNotFoundError, ValueError) as e:
+        printL(f"smp 단가 파일 읽기 실패: {e}")
+        today_smp = 100  # 기본값
+
+    smp_income = total_kWh * today_smp
+    smp_income = int(total_kWh * today_smp)  # 소수점 아래 버림
+    smp_income_str = "{:,}".format(smp_income)  # 3자리마다 콤마 추가
+    printL(f"[한전] 당일 smp 수익: {smp_income}")
 
   # telegram 메세지 발송
   async def tele_push(content): #텔레그램 발송용 함수
@@ -328,7 +350,7 @@ def fetch_today_kp():
     await bot.send_message(chat_id, formatted_time + "\n" + content, parse_mode = 'Markdown')
   
   # msg_content = str(result)
-  msg_content = "*<한전 당일>\n" + str(result['today_kWh']) + "*\n<한전 당월>\n[" + str(result['month_kWh']) + "]"
+  msg_content = "*<한전 당일>\n" + str(result['today_kWh']) + "*\n<한전 당월>\n[" + str(result['month_kWh']) + "]" + "\n<smp> " + str(today_smp) + "원/kWh" + "\n<today> :" + str(smp_income_str)
   asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
   return result
