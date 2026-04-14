@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 from requests import Session
+import requests
 from selenium.webdriver.support.select import Select
 import time, datetime
 import json
@@ -344,13 +345,81 @@ def fetch_today_kp():
     smp_income_str = "{:,}".format(smp_income)  # 3자리마다 콤마 추가
     printL(f"[한전] 당일 smp 수익: {smp_income}")
 
+  # 제주 날씨 체크
+  flag = True
+  if flag:
+      try:
+          # 제주 조천읍 날씨 정보 가져오기 (네이버 통합검색이 크롤링에 더 용이함)
+          weather_url = "https://search.naver.com/search.naver?query=제주조천읍날씨"
+          headers = {"User-Agent": "Mozilla/5.0"}
+          response = requests.get(weather_url, headers=headers)
+          soup = BeautifulSoup(response.text, 'html.parser')
+
+          # 현재 온도 (현재 온도 12.9° -> 12.9°)
+          temp_el = soup.select_one('.temperature_text strong')
+          current_temp = temp_el.text.replace('현재 온도', '').strip() if temp_el else '정보없음'
+          
+          # 날씨 상태
+          condition_el = soup.select_one('.before_slash') or soup.select_one('.weather_main .summary .weather') or soup.select_one('.weather_main .weather')
+          weather_state = condition_el.text.strip() if condition_el else '정보없음'
+          
+          # 강수 확률
+          rain_el = soup.select_one('.rain_rate .num') or soup.select_one('.list_area .rain_rate .num') or soup.select_one('.rainfall .num')
+          rain_rate = rain_el.text.strip() if rain_el else '0%'
+
+          # 내일 날씨 추출
+          tomorrow_weather = {'temp_low': '', 'temp_high': '', 'am_cond': '', 'am_rain': '', 'pm_cond': '', 'pm_rain': ''}
+          for li in soup.select('.week_item'):
+              if '내일' in li.select_one('.day').text:
+                  # 기온
+                  tomorrow_weather['temp_low'] = li.select_one('.lowest').text.replace('최저기온', '').strip() if li.select_one('.lowest') else ''
+                  tomorrow_weather['temp_high'] = li.select_one('.highest').text.replace('최고기온', '').strip() if li.select_one('.highest') else ''
+                  
+                  # 오전/오후 날씨 및 강수확률
+                  weather_inners = li.select('.weather_inner')
+                  if len(weather_inners) >= 2:
+                      # 오전
+                      tomorrow_weather['am_rain'] = weather_inners[0].select_one('.rainfall').text.strip() if weather_inners[0].select_one('.rainfall') else ''
+                      tomorrow_weather['am_cond'] = weather_inners[0].select_one('.blind').text.strip() if weather_inners[0].select_one('.blind') else ''
+                      # 오후
+                      tomorrow_weather['pm_rain'] = weather_inners[1].select_one('.rainfall').text.strip() if weather_inners[1].select_one('.rainfall') else ''
+                      tomorrow_weather['pm_cond'] = weather_inners[1].select_one('.blind').text.strip() if weather_inners[1].select_one('.blind') else ''
+                  break
+
+          # 변수에 저장
+          jeju_weather = {
+              'today': {
+                  'temperature': current_temp,
+                  'condition': weather_state,
+                  'rain_chance': rain_rate
+              },
+              'tomorrow': tomorrow_weather
+          }
+          
+          printL(f"[제주날씨] 오늘: {current_temp}, {weather_state}, 강수확률: {rain_rate}")
+          printL(f"[제주날씨] 내일: {tomorrow_weather['temp_low']}~{tomorrow_weather['temp_high']}, 오전 {tomorrow_weather['am_cond']}({tomorrow_weather['am_rain']}), 오후 {tomorrow_weather['pm_cond']}({tomorrow_weather['pm_rain']})")
+          
+      except Exception as e:
+          printL(f"[제주날씨] 오류: {e}")
+          jeju_weather = {
+              'today': {'temperature': '정보없음', 'condition': '정보없음', 'rain_chance': '정보없음'},
+              'tomorrow': {'temp_low': '', 'temp_high': '', 'am_cond': '', 'am_rain': '', 'pm_cond': '', 'pm_rain': ''}
+          }
+ 
   # telegram 메세지 발송
   async def tele_push(content): #텔레그램 발송용 함수
     bot = telegram.Bot(token = token)
     await bot.send_message(chat_id, formatted_time + "\n" + content, parse_mode = 'Markdown')
   
   # msg_content = str(result)
-  msg_content = "*<한전 당일>\n" + str(result['today_kWh']) + "*\n<한전 당월>\n[" + str(result['month_kWh']) + "]" + "\n<smp> " + str(today_smp) + "원/kWh" + "\n<today> " + str(smp_income_str) + "원 + REC"
+  # 텔레그램 메시지 구성
+  weather_msg = f"[[제주날씨]] 오늘 {jeju_weather['today']['temperature']} {jeju_weather['today']['condition']} ({jeju_weather['today']['rain_chance']})"
+  if jeju_weather['tomorrow']['temp_low']:
+      weather_msg += f"\n[내일] {jeju_weather['tomorrow']['temp_low']} ~ {jeju_weather['tomorrow']['temp_high']} "
+      weather_msg += f"오전 {jeju_weather['tomorrow']['am_cond']}({jeju_weather['tomorrow']['am_rain']}), "
+      weather_msg += f"오후 {jeju_weather['tomorrow']['pm_cond']}({jeju_weather['tomorrow']['pm_rain']})"
+
+  msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원/kWh\nToday : {str(smp_income_str)}원 + REC\n\n{weather_msg}"
   asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
   return result
