@@ -419,7 +419,7 @@ def fetch_today_kp():
       weather_msg += f"오전 {jeju_weather['tomorrow']['am_cond']}({jeju_weather['tomorrow']['am_rain']}), "
       weather_msg += f"오후 {jeju_weather['tomorrow']['pm_cond']}({jeju_weather['tomorrow']['pm_rain']})"
 
-  msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원/kWh\nToday : {str(smp_income_str)}원 + REC\n\n{weather_msg}"
+  msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원\nToday : {str(smp_income_str)}원 + REC\n\n{weather_msg}"
   asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
   return result
