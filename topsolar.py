@@ -350,7 +350,7 @@ def fetch_today_kp():
     await bot.send_message(chat_id, formatted_time + "\n" + content, parse_mode = 'Markdown')
   
   # msg_content = str(result)
-  msg_content = "*<한전 당일>\n" + str(result['today_kWh']) + "*\n<한전 당월>\n[" + str(result['month_kWh']) + "]" + "\n<smp> " + str(today_smp) + "원/kWh" + "\n<today> :" + str(smp_income_str)
+  msg_content = "*<한전 당일>\n" + str(result['today_kWh']) + "*\n<한전 당월>\n[" + str(result['month_kWh']) + "]" + "\n<smp> " + str(today_smp) + "원/kWh" + "\n<today> " + str(smp_income_str) + "원 + REC"
   asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
   return result
