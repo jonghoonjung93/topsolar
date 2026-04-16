@@ -365,6 +365,27 @@ def fetch_today_kp():
     smp_income_str = "{:,}".format(smp_income)  # 3자리마다 콤마 추가
     printL(f"[한전] 당일 smp 수익: {smp_income}")
 
+    # rec 당일 단가 조회
+    try:
+        with open('../attendance/today_rec.txt', 'r', encoding='utf-8') as f:
+            today_rec = f.read().strip()
+        # txt 파일에 기록된 값이 숫자인지 확인
+        today_rec = float(today_rec)
+        printL(f"[한전] 당일 rec 단가: {today_rec}")
+    except (FileNotFoundError, ValueError) as e:
+        printL(f"rec 단가 파일 읽기 실패: {e}")
+        today_rec = 70000  # 기본값
+
+    # rec 수익 계산 로직
+    rec_count = f"{round(total_kWh / 1000 * 1.1, 1):.1f}"  # 소수점 한자리 아래 버림
+    printL(f"[한전] 당일 rec 개수: {rec_count}")
+    rec_income = int(float(rec_count) * float(today_rec))
+    rec_income_str = "{:,}".format(rec_income)  # 3자리마다 콤마 추가
+    printL(f"[한전] 당일 rec 수익: {rec_count}, {rec_income_str}")
+    total_income = smp_income + rec_income
+    total_income_str = "{:,}".format(total_income)  # 3자리마다 콤마 추가
+    printL(f"[한전] 당일 총 수익: {total_income_str}")
+
   # 제주 날씨 체크
   flag = True
   if flag:
@@ -439,7 +460,7 @@ def fetch_today_kp():
       weather_msg += f"오전 {jeju_weather['tomorrow']['am_cond']}({jeju_weather['tomorrow']['am_rain']}), "
       weather_msg += f"오후 {jeju_weather['tomorrow']['pm_cond']}({jeju_weather['tomorrow']['pm_rain']})"
 
-  msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원\nToday : {str(smp_income_str)}원 + REC\n\n{weather_msg}"
+  msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원\nToday : {str(smp_income_str)}원 + REC: {rec_count}개, {rec_income_str}원\nTotal : {total_income_str}원\n\n{weather_msg}"
   asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
   return result
