@@ -1,0 +1,36 @@
+{
+    "timestamp": "2026-05-08 15:52:32",
+    "today_kWh": [
+        "544.4",
+        "543.8",
+        "551.7",
+        "565.8"
+    ],
+    "month_kWh": [
+        "4,447",
+        "4,452",
+        "4,510",
+        "4,501"
+    ],
+    "smp_price": 124.15,
+    "smp_income": 273837,
+    "rec_price": 71228.0,
+    "rec_count": "2.4",
+    "rec_income": 170947,
+    "total_income": 444784,
+    "weather": {
+        "today": {
+            "temperature": "17.4°",
+            "condition": "맑음",
+            "rain_chance": "0%"
+        },
+        "tomorrow": {
+            "temp_low": "11°",
+            "temp_high": "20°",
+            "am_cond": "구름많음",
+            "am_rain": "20%",
+            "pm_cond": "맑음",
+            "pm_rain": "0%"
+        }
+    }
+}

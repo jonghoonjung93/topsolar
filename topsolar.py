@@ -16,6 +16,7 @@ import asyncio
 import sqlite3
 import socket
 import os
+import sys
 
 def mode_check():
   hostname = socket.gethostname()
@@ -173,7 +174,9 @@ def fetch_today():
     
     # msg_content = str(result)
     msg_content = "*<탑솔라 당일>\n" + str(result['today_kWh']) + "*\n<탑솔라 당월>\n[" + str(result['month_kWh']) + "]"
-    asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
+    
+    if "notele" not in sys.argv:
+      asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
 
     return result
 
@@ -456,12 +459,32 @@ def fetch_today_kp():
   # 텔레그램 메시지 구성
   weather_msg = f"[[제주날씨]] 오늘 {jeju_weather['today']['temperature']} {jeju_weather['today']['condition']} ({jeju_weather['today']['rain_chance']})"
   if jeju_weather['tomorrow']['temp_low']:
-      weather_msg += f"\n[내일] {jeju_weather['tomorrow']['temp_low']} ~ {jeju_weather['tomorrow']['temp_high']} "
+      weather_msg += f"\n[[내일]] {jeju_weather['tomorrow']['temp_low']} ~ {jeju_weather['tomorrow']['temp_high']} "
       weather_msg += f"오전 {jeju_weather['tomorrow']['am_cond']}({jeju_weather['tomorrow']['am_rain']}), "
       weather_msg += f"오후 {jeju_weather['tomorrow']['pm_cond']}({jeju_weather['tomorrow']['pm_rain']})"
 
   msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원\nToday : {str(smp_income_str)}원 + REC: {rec_count}개, {rec_income_str}원\nTotal : {total_income_str}원\n\n{weather_msg}"
-  asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
+  
+  if "notele" not in sys.argv:
+    asyncio.run(tele_push(msg_content)) #텔레그램 발송 (asyncio를 이용해야 함)
+
+  # 결과 데이터 JSON 파일로 저장
+  result_data = {
+      'timestamp': formatted_time,
+      'today_kWh': result['today_kWh'],
+      'month_kWh': result['month_kWh'],
+      'smp_price': today_smp,
+      'smp_income': smp_income,
+      'rec_price': today_rec,
+      'rec_count': rec_count,
+      'rec_income': rec_income,
+      'total_income': total_income,
+      'weather': jeju_weather
+  }
+  
+  with open('ysolar_result.json', 'w', encoding='utf-8') as f:
+      json.dump(result_data, f, ensure_ascii=False, indent=4)
+  printL("결과 데이터를 ysolar_result.json 파일로 저장하였습니다.")
 
   return result
 
