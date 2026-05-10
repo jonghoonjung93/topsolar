@@ -102,29 +102,52 @@ def fetch_today():
     WAIT_TIME = 5
     WAIT_CNT = 100
 
-    i = 0
-    for table in solars:
-      # print(f"solars[{i}]: {table}")
+    for i, table in enumerate(solars):
+      for retry in range(5): # 수치가 0일 경우 최대 5번까지 반복
+        # print(f"solars[{i}]: {table}")
 
-      # 와이솔라1호~4호 선택
-      select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
-      select.select_by_value(table)
-      # print("wait... 10sec")
-      count = 0
-      while count < WAIT_CNT:
-        time.sleep(WAIT_TIME) #몇 kWh 가 생산되었는지 표시되기까지 기다리는 시간
-      
-        today_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
-        today_hour[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
-        month_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
-        # print(f"today_kWh[{i}] (count={str(count)})")
-        count += 1
-        if today_kWh[i] == '':  # today_kW1 데이타가 null 이면 while 문을 다시 시도
-          # print(f"wait... 10sec {count}")
-          continue
-        else: # 결과값 찾기에 성공했을때는 break 로 while 문 탈출
-          printL(f"와이솔라{i+1}호 : {today_kWh[i]} 재시도 {count}회")
-          i = i + 1
+        # 와이솔라1호~4호 선택
+        select = Select(driver.find_element(By.CLASS_NAME, 'form-select'))
+        select.select_by_value(table)
+        # print("wait... 10sec")
+        count = 0
+        while count < WAIT_CNT:
+          time.sleep(WAIT_TIME) #몇 kWh 가 생산되었는지 표시되기까지 기다리는 시간
+        
+          today_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[1]/td').text
+          today_hour[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[2]/td').text
+          month_kWh[i] = driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div[2]/div/table/tbody/tr[3]/td').text
+          # print(f"today_kWh[{i}] (count={str(count)})")
+          count += 1
+          if today_kWh[i] == '':  # today_kW1 데이타가 null 이면 while 문을 다시 시도
+            # print(f"wait... 10sec {count}")
+            continue
+          else: # 결과값 찾기에 성공했을때는 break 로 while 문 탈출
+            # 수치가 0일 경우 재작업 로직 (단, count가 WAIT_CNT에 도달하기 전이라도 0이면 재시도 대상)
+            if today_kWh[i] == '0' or today_kWh[i] == '0.0':
+              printL(f"와이솔라{i+1}호 : {today_kWh[i]} 수치 0 감지. 5초 후 로그인부터 재시도 (시도 {retry+1}/5)")
+              time.sleep(5)
+              
+              # 로그인부터 다시 수행
+              driver.get(url)
+              time.sleep(5)
+              driver.find_element(By.ID, "user-id").clear()
+              driver.find_element(By.ID, "user-id").send_keys(user_id)
+              driver.find_element(By.ID, "user-password").clear()
+              driver.find_element(By.ID, "user-password").send_keys(password)
+              driver.find_element(By.ID, 'login-btn').click()
+              time.sleep(5)
+              break # while 문 탈출하여 retry 루프의 다음 시도로 이동
+            
+            printL(f"와이솔라{i+1}호 : {today_kWh[i]} 재시도 {count}회")
+            break # while 문 탈출
+        
+        # while 문을 정상적으로 마쳤고 수치가 0이 아니면 retry 루프 탈출
+        if today_kWh[i] != '' and today_kWh[i] != '0' and today_kWh[i] != '0.0':
+          break
+        # 만약 5번 시도했는데도 계속 0이면 그냥 다음 발전소로 진행 (무한루프 방지)
+        if retry == 4:
+          printL(f"와이솔라{i+1}호 : 5회 시도 후에도 수치 0. 다음으로 진행.")
           break
     
     result = {
@@ -228,95 +251,103 @@ def fetch_today_kp():
   today_hour = ['','','','']
   month_kWh = ['','','','']
 
-  i = 0
-  for ysolar in user_id:
-    # 사이트 접속 및 로그인
-    driver.get(url1)
-    time.sleep(4)
-    try:
-      driver.find_element(By.CLASS_NAME, "popclose").click()
-      printL("popclose click")
-    except:
-      printL("popclose not found")
-
-    try:
-      driver.find_element(By.ID, "RSA_USER_ID").send_keys(user_id[i])
-      driver.find_element(By.ID, "RSA_USER_PWD").send_keys(password)
-      # 아래 3가지 로그인버튼 클릭 방법중 한개만 온라인에서 성공함 (개발에서는 다 성공)
-      driver.find_element(By.ID, "RSA_USER_PWD").send_keys(Keys.ENTER)
-      # driver.find_element(By.CLASS_NAME, 'intro_btn').click()
-      # driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[1]/form/fieldset/input[1]").click()
-    except:
-      printL("로그인 실패. 재시도(1회만)")
+  for i, ysolar in enumerate(user_id):
+    for retry in range(5): # 수치가 0일 경우 최대 5번까지 반복
+      # 사이트 접속 및 로그인
+      driver.get(url1)
+      time.sleep(4)
       try:
-        driver.get(url1)
-        time.sleep(10)
+        driver.find_element(By.CLASS_NAME, "popclose").click()
+        printL("popclose click")
+      except:
+        printL("popclose not found")
+
+      try:
         driver.find_element(By.ID, "RSA_USER_ID").send_keys(user_id[i])
         driver.find_element(By.ID, "RSA_USER_PWD").send_keys(password)
+        # 아래 3가지 로그인버튼 클릭 방법중 한개만 온라인에서 성공함 (개발에서는 다 성공)
         driver.find_element(By.ID, "RSA_USER_PWD").send_keys(Keys.ENTER)
+        # driver.find_element(By.CLASS_NAME, 'intro_btn').click()
+        # driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[1]/form/fieldset/input[1]").click()
       except:
-        printL("로그인 실패. 2회 실패. return")
-        result = {
-            'today_kWh': today_kWh,
-            'month_kWh': month_kWh
-        }
-        return result
-    
-    time.sleep(1)
-    driver.get(url2)  # 시간대별 사용량 조회 페이지 이동 (당일자 조회용)
-    time.sleep(5)
-    # 발전 라디오 버튼 클릭
-    try:
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
-    except:
-      printL("발전 라디오 버튼 클릭 실패1")
-      time.sleep(3)
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
-    time.sleep(1)
-    # 조회 버튼 클릭
-    # driver.find_element(By.CLASS_NAME, "btn_blue_right").click()  #이거는 실패, XPATH로 변경
-    try:
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
-    except:
-      printL("조회 버튼 클릭 실패")
+        printL("로그인 실패. 재시도(1회만)")
+        try:
+          driver.get(url1)
+          time.sleep(10)
+          driver.find_element(By.ID, "RSA_USER_ID").send_keys(user_id[i])
+          driver.find_element(By.ID, "RSA_USER_PWD").send_keys(password)
+          driver.find_element(By.ID, "RSA_USER_PWD").send_keys(Keys.ENTER)
+        except:
+          printL("로그인 실패. 2회 실패. return")
+          result = {
+              'today_kWh': today_kWh,
+              'month_kWh': month_kWh
+          }
+          return result
+      
       time.sleep(1)
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
-    time.sleep(1)
-    # 당일 발전량 가져오기
-    today_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr[1]/td[6]").text
-    # 소수점 1자리까지만 표시하는걸로 변환 (원래 소수점 3자리로 나옴)
-    today_kWh[i] = "{:.1f}".format(float(today_kWh[i]))
-    printL(f"[한전] 와이솔라{i+1}호: {today_kWh[i]}")
-    time.sleep(1)
-
-    driver.get(url3)  # 일별 사용량 조회 페이지 이동 (월간 합계 조회용)
-    time.sleep(5)
-    # 발전 라디오 버튼 클릭
-    try:
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
-    except:
-      printL("발전 라디오 버튼 클릭 실패2")
-      time.sleep(3)
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
-    # 조회 버튼 클릭
-    time.sleep(1)
-    # driver.find_element(By.CLASS_NAME, "btn_blue_right").click()
-    try:
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
-    except:
-      printL("조회 버튼 클릭 실패")
+      driver.get(url2)  # 시간대별 사용량 조회 페이지 이동 (당일자 조회용)
+      time.sleep(5)
+      # 발전 라디오 버튼 클릭
+      try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
+      except:
+        printL("발전 라디오 버튼 클릭 실패1")
+        time.sleep(3)
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[6]").click()
       time.sleep(1)
-      driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
-    time.sleep(1)
-    # 당월 총발전량 가져오기 (소수점 아래는 버림)
-    month_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr/td[4]").text.split('.')[0]
-    printL(f"[한전] 와이솔라{i+1}호 month: {month_kWh[i]}")
-    time.sleep(2)
+      # 조회 버튼 클릭
+      # driver.find_element(By.CLASS_NAME, "btn_blue_right").click()  #이거는 실패, XPATH로 변경
+      try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
+      except:
+        printL("조회 버튼 클릭 실패")
+        time.sleep(1)
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
+      time.sleep(1)
+      # 당일 발전량 가져오기
+      today_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr[1]/td[6]").text
+      # 소수점 1자리까지만 표시하는걸로 변환 (원래 소수점 3자리로 나옴)
+      today_kWh[i] = "{:.1f}".format(float(today_kWh[i]))
+      printL(f"[한전] 와이솔라{i+1}호: {today_kWh[i]}")
+      
+      # 수치가 0일 경우 재작업 로직
+      if float(today_kWh[i]) == 0:
+        printL(f"[한전] 와이솔라{i+1}호: 수치 0 감지. 5초 후 로그인부터 재시도 (시도 {retry+1}/5)")
+        time.sleep(5)
+        if retry < 4:
+          continue # 다시 로그인부터 수행
+      
+      time.sleep(1)
 
-    # logout 버튼 클릭
-    driver.find_element(By.XPATH, "/html/body/div[1]/div[1]/p/a[2]").click()
-    time.sleep(2)
-    i = i + 1
+      driver.get(url3)  # 일별 사용량 조회 페이지 이동 (월간 합계 조회용)
+      time.sleep(5)
+      # 발전 라디오 버튼 클릭
+      try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
+      except:
+        printL("발전 라디오 버튼 클릭 실패2")
+        time.sleep(3)
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[1]/input[4]").click()
+      # 조회 버튼 클릭
+      time.sleep(1)
+      # driver.find_element(By.CLASS_NAME, "btn_blue_right").click()
+      try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
+      except:
+        printL("조회 버튼 클릭 실패")
+        time.sleep(1)
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[2]/div/p[2]/span[1]/a").click()
+      time.sleep(1)
+      # 당월 총발전량 가져오기 (소수점 아래는 버림)
+      month_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr/td[4]").text.split('.')[0]
+      printL(f"[한전] 와이솔라{i+1}호 month: {month_kWh[i]}")
+      time.sleep(2)
+
+      # logout 버튼 클릭
+      driver.find_element(By.XPATH, "/html/body/div[1]/div[1]/p/a[2]").click()
+      time.sleep(2)
+      break # 성공했으므로 retry 루프 탈출
   # printL(f"[한전] 당일 발전량: {today_kWh}")
   # printL(f"[한전] 당월 발전량: {month_kWh}")
   
