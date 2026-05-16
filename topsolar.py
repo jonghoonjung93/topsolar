@@ -198,16 +198,16 @@ def fetch_today():
     # msg_content = str(result)
     msg_content = "*<탑솔라 당일>\n" + str(result['today_kWh']) + "*\n<탑솔라 당월>\n[" + str(result['month_kWh']) + "]"
     
-    # 발전량 수치 차이 체크 (10% 이상 차이 확인)
+    # 발전량 수치 차이 체크 (20% 이상 차이 확인)
     is_anomaly = False
     try:
         vals = [float(x) for x in today_kWh if x]
         if len(vals) > 0:
             max_val = max(vals)
             min_val = min(vals)
-            if max_val > 0 and (max_val - min_val) / max_val > 0.1:
+            if max_val > 0 and (max_val - min_val) / max_val > 0.2:
                 is_anomaly = True
-                printL(f"[TOPSOLAR] 수치 이상 감지: {min_val} vs {max_val} (10% 초과 차이)")
+                printL(f"[TOPSOLAR] 수치 이상 감지: {min_val} vs {max_val} (20% 초과 차이)")
     except Exception as e:
         printL(f"[TOPSOLAR] 수치 체크 오류: {e}")
 
@@ -509,16 +509,16 @@ def fetch_today_kp():
 
   msg_content = f"*<한전 당일>*\n[{str(result['today_kWh'])}]\n<한전 당월>\n[{str(result['month_kWh'])}]\n\n<SMP> {str(today_smp)}원\nToday : {str(smp_income_str)}원 + REC: {rec_count}개, {rec_income_str}원\nTotal : {total_income_str}원\n\n{weather_msg}"
   
-  # 발전량 수치 차이 체크 (10% 이상 차이 확인)
+  # 발전량 수치 차이 체크 (20% 이상 차이 확인)
   is_anomaly = False
   try:
       vals = [float(x) for x in today_kWh if x]
       if len(vals) > 0:
           max_val = max(vals)
           min_val = min(vals)
-          if max_val > 0 and (max_val - min_val) / max_val > 0.1:
+          if max_val > 0 and (max_val - min_val) / max_val > 0.2:
               is_anomaly = True
-              printL(f"[한전] 수치 이상 감지: {min_val} vs {max_val} (10% 초과 차이)")
+              printL(f"[한전] 수치 이상 감지: {min_val} vs {max_val} (20% 초과 차이)")
   except Exception as e:
       printL(f"[한전] 수치 체크 오류: {e}")
 
