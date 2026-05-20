@@ -205,9 +205,9 @@ def fetch_today():
         if len(vals) > 0:
             max_val = max(vals)
             min_val = min(vals)
-            if max_val > 0 and (max_val - min_val) / max_val > 0.2 and (max_val - min_val) > 10:
+            if max_val > 0 and (max_val - min_val) / max_val > 0.2 and (max_val - min_val) > 20:
                 is_anomaly = True
-                printL(f"[TOPSOLAR] 수치 이상 감지: {min_val} vs {max_val} (20% 초과 차이 및 절대차이 10 초과)")
+                printL(f"[TOPSOLAR] 수치 이상 감지: {min_val} vs {max_val} (20% 초과 차이 및 절대차이 20 초과)")
     except Exception as e:
         printL(f"[TOPSOLAR] 수치 체크 오류: {e}")
 
@@ -516,9 +516,9 @@ def fetch_today_kp():
       if len(vals) > 0:
           max_val = max(vals)
           min_val = min(vals)
-          if max_val > 0 and (max_val - min_val) / max_val > 0.2 and (max_val - min_val) > 10:
+          if max_val > 0 and (max_val - min_val) / max_val > 0.2 and (max_val - min_val) > 20:
               is_anomaly = True
-              printL(f"[한전] 수치 이상 감지: {min_val} vs {max_val} (20% 초과 차이 및 절대차이 10 초과)")
+              printL(f"[한전] 수치 이상 감지: {min_val} vs {max_val} (20% 초과 차이 및 절대차이 20 초과)")
   except Exception as e:
       printL(f"[한전] 수치 체크 오류: {e}")
 
