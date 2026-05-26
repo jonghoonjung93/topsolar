@@ -1,36 +1,36 @@
 {
-    "timestamp": "2026-05-10 19:41:33",
+    "timestamp": "2026-05-26 18:58:56",
     "today_kWh": [
-        "716.2",
-        "718.2",
-        "727.2",
-        "726.2"
+        "230.6",
+        "230.1",
+        "228.0",
+        "226.3"
     ],
     "month_kWh": [
-        "6,039",
-        "6,054",
-        "6,134",
-        "6,101"
+        "12,495",
+        "12,528",
+        "12,660",
+        "12,565"
     ],
     "smp_price": 124.15,
-    "smp_income": 358520,
+    "smp_income": 113597,
     "rec_price": 71228.0,
-    "rec_count": "3.2",
-    "rec_income": 227929,
-    "total_income": 586449,
+    "rec_count": "1.0",
+    "rec_income": 71228,
+    "total_income": 184825,
     "weather": {
         "today": {
-            "temperature": "17.2°",
-            "condition": "맑음",
+            "temperature": "22.9°",
+            "condition": "비",
             "rain_chance": "0%"
         },
         "tomorrow": {
-            "temp_low": "15°",
-            "temp_high": "23°",
-            "am_cond": "맑음",
-            "am_rain": "0%",
-            "pm_cond": "맑음",
-            "pm_rain": "0%"
+            "temp_low": "21°",
+            "temp_high": "24°",
+            "am_cond": "흐리고 가끔 비",
+            "am_rain": "60%",
+            "pm_cond": "흐리고 한때 비",
+            "pm_rain": "60%"
         }
     }
 }

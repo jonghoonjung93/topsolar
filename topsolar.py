@@ -123,14 +123,14 @@ def fetch_today():
             # print(f"wait... 10sec {count}")
             continue
           else: # 결과값 찾기에 성공했을때는 break 로 while 문 탈출
-            # 당일 수치가 0이거나 당월 수치가 0 또는 1일 경우 재작업 로직 (단, count가 WAIT_CNT에 도달하기 전이라도 이상 수치면 재시도 대상)
+            # 당일 수치가 0이거나 당월 수치가 0, 1, 2일 경우 재작업 로직 (단, count가 WAIT_CNT에 도달하기 전이라도 이상 수치면 재시도 대상)
             is_month_anomaly = False
             try:
               m_val = float(month_kWh[i].replace(',', ''))
-              if m_val == 0 or m_val == 1:
+              if m_val <= 2:
                 is_month_anomaly = True
             except:
-              pass
+              is_month_anomaly = True
 
             if today_kWh[i] == '0' or today_kWh[i] == '0.0' or is_month_anomaly:
               printL(f"와이솔라{i+1}호 : today {today_kWh[i]}, month {month_kWh[i]} 수치 이상 감지. 5초 후 로그인부터 재시도 (시도 {retry+1}/5)")
@@ -155,7 +155,7 @@ def fetch_today():
         try:
           t_val = float(today_kWh[i].replace(',', ''))
           m_val = float(month_kWh[i].replace(',', ''))
-          if t_val != 0 and m_val > 1:
+          if t_val != 0 and m_val > 2:
             is_val_ok = True
         except:
           pass
@@ -360,14 +360,14 @@ def fetch_today_kp():
       month_kWh[i] = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[5]/table/tbody/tr/td[4]").text.split('.')[0]
       printL(f"[한전] 와이솔라{i+1}호 month: {month_kWh[i]}")
 
-      # 수치가 0 또는 1일 경우 재작업 로직
+      # 수치가 0, 1, 2일 경우 재작업 로직
       is_month_anomaly = False
       try:
-          m_val = float(month_kWh[i].replace(',', ''))
-          if m_val == 0 or m_val == 1:
-              is_month_anomaly = True
+        m_val = float(month_kWh[i].replace(',', ''))
+        if m_val <= 2:
+          is_month_anomaly = True
       except:
-          pass
+        is_month_anomaly = True
 
       if is_month_anomaly:
         printL(f"[한전] 와이솔라{i+1}호: month {month_kWh[i]} 수치 이상 감지. 5초 후 로그인부터 재시도 (시도 {retry+1}/5)")
