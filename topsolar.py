@@ -435,6 +435,10 @@ def fetch_today_kp():
             today_smp = f.read().strip()
         # txt 파일에 기록된 값이 숫자인지 확인
         today_smp = float(today_smp)
+        # 수치가 0인 경우 임시값 111 사용
+        if today_smp == 0:
+            printL(f"smp 단가가 0이므로 임시값 111 사용")
+            today_smp = 111
         printL(f"[한전] 당일 smp 단가: {today_smp}")
     except (FileNotFoundError, ValueError) as e:
         printL(f"smp 단가 파일 읽기 실패: {e}")
@@ -451,10 +455,10 @@ def fetch_today_kp():
             today_rec = f.read().strip()
         # txt 파일에 기록된 값이 숫자인지 확인
         today_rec = float(today_rec)
-        # 수치가 0인 경우 임시값 111 사용
+        # 수치가 0인 경우 임시값 70000 사용
         if today_rec == 0:
-            printL(f"rec 단가가 0이므로 임시값 111 사용")
-            today_rec = 111
+            printL(f"rec 단가가 0이므로 임시값 70000 사용")
+            today_rec = 70000
         printL(f"[한전] 당일 rec 단가: {today_rec}")
     except (FileNotFoundError, ValueError) as e:
         printL(f"rec 단가 파일 읽기 실패: {e}")
