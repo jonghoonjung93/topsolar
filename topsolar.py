@@ -233,6 +233,80 @@ def fetch_today():
 
     return result
 
+def smp_price_check():
+  result = mode_check()
+  # print(result)
+
+  options = Options()
+  if result == "ONLINE":
+    options.add_argument("headless") # ONLINE 에서만 크롬창이 뜨지 않고 백그라운드로 동작됨
+  
+  # 아래 옵션 두줄 추가(NAS docker 에서 실행시 필요, memory 부족해서)
+  options.add_argument('--no-sandbox')
+  options.add_argument('--disable-dev-shm-usage')
+  
+  # config.json 파일처리 ----------------
+  with open('config.json','r') as f:
+      config = json.load(f)
+  url_smp = config['SOLAR']['URL1']
+  url_rec = config['SOLAR']['URL2']
+  # ------------------------------------
+  # print(url_smp)
+  # print(url_rec)
+
+  service = Service(ChromeDriverManager().install())
+  driver = webdriver.Chrome(service=service, options=options)
+
+  # 전력거래소 사이트 SMP 조회화면 진입
+  driver.get(url_smp)
+  #driver.maximize_window()
+  # action = ActionChains(driver)
+
+  time.sleep(1)
+  
+  smp_head = driver.find_element(By.XPATH, '//*[@id="contents_body"]/div[2]/div[2]/table/thead/tr').text
+  smp_data = driver.find_element(By.XPATH, '//*[@id="contents_body"]/div[2]/div[2]/table/tbody/tr[27]').text
+  
+  #----- (월) (화) 이런식으로 요일표시된거 지우기. 너무 길어서
+  import re
+  pattern = r'\(.*?\)'
+  cleaned_text = re.sub(pattern, '', smp_head)
+  cleaned_text = cleaned_text.strip()
+  #---------------------------------------------
+
+  smp_head = cleaned_text.replace('\n', '')
+  
+  # print(repr(smp_head)) #문자열안에 특수문자까지 다 볼때
+  # print(smp_head)
+  printL(f'smp_data = {smp_data}')
+  # Extract the last field from smp_data string
+  today_smp = smp_data.split()[-1]
+  # printL(f'today_smp = {today_smp}')
+  printL(f"[KPX] 당일 smp 단가: {today_smp}")
+  # Save today_smp value to a file
+  with open('../attendance/today_smp.txt', 'w') as f:
+      f.write(today_smp)
+  
+  # time.sleep(2)
+  # driver.get(url_rec)
+  # action = ActionChains(driver)
+
+  # time.sleep(2)
+  # rec_data = driver.find_element(By.ID, 'tab-1').text
+  # rec = rec_data.replace('\n',' ')
+
+  # # print(f'rec_data = {rec_data}')
+  # # print(f'rec = {rec}')
+
+  # def get_last_word(s):   # 마지막 문자열만 return 해주는 함수
+  #     # Split the string into words
+  #     words = s.split()
+  #     # Return the last word if the list is not empty
+  #     return words[-1] if words else ""
+  
+  # rec_avg = get_last_word(rec)
+  # printL(f'rec_avg = {rec_avg}')
+
 def fetch_today_kp():
   result = mode_check()
   # print(result)
@@ -442,7 +516,7 @@ def fetch_today_kp():
         printL(f"[한전] 당일 smp 단가: {today_smp}")
     except (FileNotFoundError, ValueError) as e:
         printL(f"smp 단가 파일 읽기 실패: {e}")
-        today_smp = 100  # 기본값
+        today_smp = 111  # 기본값
 
     smp_income = total_kWh * today_smp
     smp_income = int(total_kWh * today_smp)  # 소수점 아래 버림
@@ -587,6 +661,24 @@ def fetch_today_kp():
   return result
 
 if __name__ == "__main__":
+  # smp price 조회
+  flag = True
+  if flag:
+    # smp 당일 단가 조회
+    try:
+        with open('../attendance/today_smp.txt', 'r', encoding='utf-8') as f:
+            today_smp = f.read().strip()
+        # txt 파일에 기록된 값이 숫자인지 확인
+        today_smp = float(today_smp)
+        printL(f"[FILE] 당일 smp 단가: {today_smp}")
+        # 수치가 0인 경우 가격 조회 시작
+        if today_smp == 0:
+            printL("[SMP] 가격 조회 시작")
+            result3=smp_price_check()
+    except (FileNotFoundError, ValueError) as e:
+        printL(f"smp 단가 파일 읽기 실패: {e}")
+    # printL(result3)
+  
   # 한전파워플래너 로직 실행
   flag = True
   if flag:
