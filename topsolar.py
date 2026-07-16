@@ -313,7 +313,20 @@ def fetch_today_kp():
 
   options = Options()
   if result == "ONLINE":
-    options.add_argument("headless") # ONLINE 에서만 크롬창이 뜨지 않고 백그라운드로 동작됨
+    # options.add_argument("headless") # ONLINE 에서만 크롬창이 뜨지 않고 백그라운드로 동작됨
+    options.add_argument("--headless=new")
+
+  # 아래는 가끔 작업이 실패하는걸 개선하기 위해 추가함 (20260414)
+  options.add_argument("--disable-dev-shm-usage")
+  options.add_argument("--blink-settings=imagesEnabled=false")
+  options.add_argument("--disable-extensions")
+  options.add_argument("--disable-infobars")
+  options.add_argument("--no-sandbox")
+  options.add_argument("--disable-dev-shm-usage")
+  options.add_argument("--disable-gpu")
+  options.add_argument("--window-size=1920,1080")
+  options.add_argument("--disable-extensions")
+
 
   # 수정목표.
   # 로그인 먼저하고, 값이 없으면 몇초 대기후 다시 보고.. 이런거 반복하는 방식 개선 필요함.
